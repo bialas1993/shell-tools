@@ -3,8 +3,8 @@
 SCRIPT=$(readlink -f "$0")
 SCRIPTPATH=$(dirname "$SCRIPT")
 KEY=$SCRIPTPATH/BIB.keystore
+KEYPASS="asdf1234"
 APKTOOL=$SCRIPTPATH/apktool
-
 OUT_APP="/tmp/final.apk"
 
 if [[ $# -eq 1 ]]; then
@@ -18,11 +18,10 @@ if [[ $# -eq 1 ]]; then
 
 		OUTPUT_APP=$APP_DIR-mod.apk
 
-
 		cp $APP_DIR/dist/$APP $OUTPUT_APP
 
-		echo "Pass: asdf1234"
-		jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore $KEY $OUTPUT_APP backinblack
+		
+		jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -storepass $KEYPASS -keystore $KEY $OUTPUT_APP backinblack
 
 		# Verify
 		jarsigner -verify -verbose -certs $APP
@@ -34,8 +33,9 @@ if [[ $# -eq 1 ]]; then
 		zipalign -v 4 $OUTPUT_APP $OUT_APP
 
 		adb install -r $OUT_APP
-	
+	else
+		echo "Not found project to build!"
 	fi
 else
-	echo "Not found apk to build."
+	echo "Not write project to build!"
 fi
